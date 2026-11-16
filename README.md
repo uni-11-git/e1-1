@@ -2,22 +2,43 @@
 
 ## 1. 프로젝트 개요
 
-### 1. 실습 내용
-- Dockerfile을 이용한 Nginx 웹 서버 이미지 빌드
-- 포트 포워딩(8081:80)을 이용한 컨테이너 실행
-- 바인드 마운트를 이용한 소스 코드 실시간 반영 실습
+본 프로젝트는 Docker 컨테이너 기술의 핵심 개념을 이해하고, 실제 서비스 환경을 구축해보는 실습 과정입니다. 리눅스 터미널 환경에서의 기초 조작부터 Docker를 활용한 웹 서비스 배포, 네트워크 설정, 데이터 영속성 관리까지의 전 과정을 체계적으로 기록하였습니다.
 
 ## 2. 실행 환경
+| 항목 | 상세 내용 |
+| :--- | :--- |
+| **OS** | Ubuntu 22.04 LTS (또는 Windows WSL2) |
+| **Docker** | Docker Engine v24.0.x 이상 |
+| **Language** | HTML, Bash Shell |
+| **Tools** | Git, VS Code, Terminal |
 
 ## 3. 수행 항목 체크리스트
 
-### 1. 터미널 조작 로그
-
-### 2. 권한 실습 및 증거
-
-### 3. Docker 설치 및 기본 점검 & Docker 기본 운영 명령 수행
+- [x] [터미널 조작 로그](./docs/01_terminal.md)
+- [x] [권한 실습 및 증거](./docs/02_permissions.md)
+- [x] [Docker 설치 및 기본 점검](./docs/03_docker_ops.md)
+- [x] [Dockerfile 기반 커스텀 이미지 제작](./docs/04_custom_image.md)
+- [x] [포트 매핑 및 접속 증거](./docs/05_network_and_volume.md)
+- [x] [GitHub 연동 및 최종 보고서](./docs/06_git_final.md)
 
 ## 4. 검증 방법
+
+실습 결과가 정상적으로 작동하는지 아래 방법으로 확인할 수 있습니다.
+
+**컨테이너 상태 확인**
+
+   ```bash
+   $ docker ps -a
+CONTAINER ID   IMAGE           COMMAND                   CREATED          STATUS     PORTS                                     NAMES
+b6d3fab7d410   nginx           "/docker-entrypoint.…"   29 minutes ago   Up 29 minutes    80/tcp                                    vol-recovery-cnt
+2731c4485102   my-custom-web   "/docker-entrypoint.…"   3 hours ago      Up 3 hours    0.0.0.0:8080->80/tcp, [::]:8080->80/tcp   my-web
+d42dfb5915dc   ubuntu          "bash"                    4 hours ago      Exited (0) 4 hours ago                                             my_attach_test
+e1e33f7b68ee   ubuntu          "bash"                    4 hours ago      Exited (0) 4 hours ago                                             my-ubuntu
+acdc9baa174e   hello-world     "/hello"                  4 hours ago      Exited (0) 4 hours ago                                             strange_ptolemy
+d4237fc988fe   my-web-site     "/docker-entrypoint.…"   5 days ago       Exited (0) 5 days ago                                              my-web-container
+    ```
+
+결과 해석: my-web 컨테이너가 Up 상태이며, 8080 포트로 정상 연결되어 서비스 중임을 확인하였습니다.
 
 ## 5. 🛠 트러블 슈팅 (Troubleshooting)
 

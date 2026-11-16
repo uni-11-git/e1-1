@@ -1,0 +1,6 @@
+version: '3.8'
+services:
+  my-web:
+    image: nginx
+    ports:
+      - "8081:80"  # 여기를 8081로 고쳤어요!
