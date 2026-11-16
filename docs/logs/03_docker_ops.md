@@ -88,12 +88,14 @@ CONTAINER ID   NAME             CPU %     MEM USAGE / LIMIT    MEM %     NET I/O
 
 ## 컨테이너 실행 실습
 
-### 1. Hello-World 실행 결과
+### 1. Hello-World 실행
 
 - 명령어: `docker run hello-world`
-- 결과:
+- 결과: "Hello from Docker!" 메시지 확인 완료. 도커 엔진이 정상적으로 이미지를 가져오고 컨테이너를 생성함을 증명함.
 
 ```bash
+$ docker run hello-world
+
 Hello from Docker!
 This message shows that your installation appears to be working correctly.
 
@@ -116,27 +118,34 @@ For more examples and ideas, visit:
  https://docs.docker.com/get-started/
  ```
 
-### 2. Ubuntu 컨테이너 진입 및 내부 확인
+### 2. Ubuntu 컨테이너
 
-- 명령어: `docker run -it ubuntu bash`
+#### 1. 우분투 컨테이너 실행 및 터미널 진입
+
+- 명령어: `docker run -it --name my-ubuntu ubuntu bash`
 - 결과: 컨테이너 내부 쉘 접속 후 리눅스 환경 확인 완료
 
-  - `ls`: 리눅스 표준 디렉토리 구조(bin, dev, etc, root 등) 확인
+#### 2. 명령어 실습
+
+##### 1. 파일 목록 확인
+
 ```bash
+root@e1e33f7b68ee:/# ls
 bin   dev  home  lib64  mnt  proc  run   srv  tmp  var
 boot  etc  lib   media  opt  root  sbin  sys  usr
-```
+ ```
 
-
-  - `whoami`: 현재 접속 계정이 `root`임을 확인
-
-```bash
-root
-```
-
-  - `cat /etc/os-release`: `Ubuntu 24.04.1 LTS (Resolute Raccoon)` 버전 정보 확인
+##### 2. 메시지 출력
 
 ```bash
+root@e1e33f7b68ee:/# echo "hello, ubuntu!"
+hello, ubuntu!
+```
+
+##### 3. OS 정보 확인
+
+```bash
+root@e1e33f7b68ee:/# cat /etc/os-release
 PRETTY_NAME="Ubuntu 26.04.1 LTS"
 NAME="Ubuntu"
 VERSION_ID="26.04"
@@ -150,60 +159,86 @@ BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
 PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
 UBUNTU_CODENAME=resolute
 LOGO=ubuntu-logo
-root@9906fe7f9355:/# 
+root@e1e33f7b68ee:/# S
 ```
 
-### 3. 컨테이너 종료/유지(attach/exec 등)의 차이
+##### 4. 나가기
 
-
-## 기존 Dockerfile 기반 커스텀 이미지 제작
-
-Dockerfile 작성 및 이미지 빌드 (4단계)
-- **작성한 Dockerfile 내용**:
-
-  ```dockerfile
-  FROM nginx:latest
-  # 호스트의 index.html을 컨테이너 내부의 Nginx 기본 경로로 복사
-  COPY index.html /usr/share/nginx/html/index.html
-  # 80번 포트 노출
-  EXPOSE 80
-  ```
-
-## 포트 매핑 및 접속 증거
-
-### 1. 컨테이너 상세 정보 확인 (`inspect`)
-- 명령어: `docker inspect my-mounted-web`
-- 주요 확인 사항:
-  - **Status**: `running`
-  - **Ports**: `8081/tcp` -> `80/tcp`
-  - **Binds**: 호스트의 `step3` 폴더와 컨테이너의 `nginx/html` 폴더가 연결됨.
-
-
-"PortBindings": {
-    "80/tcp": [
-        {
-            "HostIp": "",
-            "HostPort": "8081"
-        }
-    ]
-}
+```bash
+root@e1e33f7b68ee:/# exit
+exit
 ```
 
-## 바인드 마운트 + 볼륨 영속성
+### 3. 컨테이너 종료/유지의 차이
 
-### 1. 바인드 마운트
+#### 1. docker exec (추천 방식)
+- **특징**: 실행 중인 컨테이너에 새로운 프로세스(bash 등)를 추가로 실행해서 진입함.
+- **관찰 결과**: `exit`로 빠져나와도 컨테이너는 종료되지 않고 계속 실행됨.
+- **용도**: 운영 중인 컨테이너 내부 상태를 확인하거나 디버깅할 때 주로 사용.
 
-### 2. Docker 볼륨 검증 (영속성)
+- **실험 로그**
 
-(Volume Persistence)
+```bash
 
-볼륨을 생성하고 데이터를 저장하여, 컨테이너가 삭제되어도 데이터가 유지되는지 확인했습니다.
+# 1. exec 진입
 
-- **볼륨 생성 및 데이터 쓰기**: 
-  `docker run --rm -v my-vol://app/data alpine sh -c "echo 'hello volume' > //app/data/result.txt"`
-- **데이터 읽기 확인**:
-  ```bash
-  $ docker run --rm -v my-vol://app/data alpine cat //app/data/result.txt
-  hello volume
-  ```
+$ docker exec -it my_test //bin/bash
 
+# 2. 프로세스 확인
+
+root@77d718fc08f8:/# ps -ef
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 03:53 ?        00:00:00 sleep 1000
+root          13       0  0 03:57 pts/0    00:00:00 //bin/bash
+root          20      13  0 03:58 pts/0    00:00:00 ps -ef
+
+# 3. 종료 및 탈출
+
+root@77d718fc08f8:/# exit
+exit
+
+What's next:
+    Try Docker Debug for seamless, persistent debugging tools in any container or image → docker debug my_test
+    Learn more at https://docs.docker.com/go/debug-cli/
+
+# 4. 컨테이너 상태 확인
+
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND        CREATED         STATUS         PORTS     NAMES
+77d718fc08f8   ubuntu    "sleep 1000"   4 minutes ago   Up 4 minutes             my_test
+
+```
+
+#### 2. docker attach
+- **특징**: 컨테이너가 처음 실행될 때의 메인 프로세스(PID 1)에 터미널을 연결함.
+- **관찰 결과**: `exit`로 빠져나오면 메인 프로세스가 종료되면서 컨테이너도 함께 멈춤.
+- **주의**: 컨테이너를 끄지 않고 빠져나오려면 `Ctrl + P, Q`를 순서대로 눌러야 함.
+
+- **실험 로그**
+
+```bash
+
+# 1. attach 진입
+
+$ docker attach my_attach_test
+
+# 2. 프로세스 확인
+
+root@d42dfb5915dc:/# ps -ef
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 04:02 pts/0    00:00:00 bash
+root           8       1  0 04:03 pts/0    00:00:00 ps -ef
+root@d42dfb5915dc:/# exit
+exit
+
+# 3. 종료 및 탈출
+
+root@d42dfb5915dc:/# exit
+exit
+
+# 4. 컨테이너 상태 확인
+
+CONTAINER ID   IMAGE         COMMAND                   CREATED          STATUS      PORTS     NAMES
+d42dfb5915dc   ubuntu        "bash"                    32 seconds ago   Exited (0) 4 seconds ago              my_attach_test
+
+```
