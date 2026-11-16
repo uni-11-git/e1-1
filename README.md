@@ -31,17 +31,44 @@
 - **원인**: Windows Git Bash 환경에서 컨테이너 내부 경로(`/app/data`)를 Windows 절대 경로로 자동 변환하여 발생한 문제.
 - **해결**: 경로 앞에 슬래시를 하나 더 추가(`//app/data`)하여 Git Bash의 자동 변환을 방지하고 컨테이너 경로임을 명시함.
 
+
 ## 6. Git 설정 및 GitHub 연동 확인
 
+### 1. Git 설정
 
-- **Git 설정 정보 (`git config --list`)**
 ```bash
-$ git config --list
-user.name=KHS
-user.email=KHS@gmail.com
+$ git config --global user.name "KHS" (이름)
+$ git config --global user.email "goo190202@gmail.com" (이메일)
+
+$ git config --list (확인)
+diff.astextplain.textconv=astextplain
+filter.lfs.clean=git-lfs clean -- %f
+filter.lfs.smudge=git-lfs smudge -- %f
+filter.lfs.process=git-lfs filter-process
+filter.lfs.required=true
+http.sslbackend=schannel
+core.autocrlf=true
+core.fscache=true
+core.symlinks=false
+pull.rebase=false
+credential.helper=manager
+credential.https://dev.azure.com.usehttppath=true
 init.defaultbranch=master
+user.email=goo190202@gmail.com
+user.name=KHS
+safe.directory=E:/workspace/my-project
+core.repositoryformatversion=0
+core.filemode=false
+core.bare=false
+core.logallrefupdates=true
+core.symlinks=false
+core.ignorecase=true
 remote.origin.url=https://github.com/uni-11-git/my-project.git
-# ... (기타 설정 생략)
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+branch.main.remote=origin
+branch.main.merge=refs/heads/main
+ ```
 
+### 2. GitHub 연동
 
-
+![GitHub 연동 증거](./docs/img/github.png)
