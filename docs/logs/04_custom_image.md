@@ -30,6 +30,8 @@ EOF
 
 ### 2. Dockerfile 작성
 
+
+
 ```bash
 $ cat <<EOF > Dockerfile (파일 생성)
 > FROM nginx:latest (베이스 이미지)
@@ -37,6 +39,12 @@ $ cat <<EOF > Dockerfile (파일 생성)
 > EXPOSE 80 (포트 설정)
 > EOF (작성 종료)
  ```
+
+ [커스텀 포인트 요약]
+
+정적 콘텐츠 교체: 기본 NGINX 환영 페이지 대신 직접 작성한 index.html을 사용하여 서비스 목적에 맞는 화면을 구성함.
+Dockerfile 활용: 베이스 이미지(nginx:latest)에 COPY 명령어를 사용하여 로컬의 파일을 이미지 내부로 자동 복사하도록 설정함.
+포트 설정: EXPOSE 80을 통해 컨테이너가 80번 포트에서 서비스됨을 명시함.
 
 ### 3. 이미지 만들기
 
@@ -50,47 +58,3 @@ $ docker images (이미지 확인)
 ```bash
 $ docker run -d -p 8080:80 --name my-web my-custom-web (이미지로 컨테이너 실행)
  ```
-
-### 5. 브라우저 접속 화면
-
-![도커 빌드 성공 스크린샷](../img/webpage.png)
-
-
-## 포트 매핑 및 접속 증거
-
-### 1. 컨테이너 상세 정보 확인 (`inspect`)
-- 명령어: `docker inspect my-mounted-web`
-- 주요 확인 사항:
-  - **Status**: `running`
-  - **Ports**: `8081/tcp` -> `80/tcp`
-  - **Binds**: 호스트의 `step3` 폴더와 컨테이너의 `nginx/html` 폴더가 연결됨.
-
-
-"PortBindings": {
-    "80/tcp": [
-        {
-            "HostIp": "",
-            "HostPort": "8081"
-        }
-    ]
-}
-```
-
-## 바인드 마운트 + 볼륨 영속성
-
-### 1. 바인드 마운트
-
-### 2. Docker 볼륨 검증 (영속성)
-
-(Volume Persistence)
-
-볼륨을 생성하고 데이터를 저장하여, 컨테이너가 삭제되어도 데이터가 유지되는지 확인했습니다.
-
-- **볼륨 생성 및 데이터 쓰기**: 
-  `docker run --rm -v my-vol://app/data alpine sh -c "echo 'hello volume' > //app/data/result.txt"`
-- **데이터 읽기 확인**:
-  ```bash
-  $ docker run --rm -v my-vol://app/data alpine cat //app/data/result.txt
-  hello volume
-  ```
-
