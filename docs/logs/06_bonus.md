@@ -73,3 +73,39 @@ local     my-persistence-vol
 ```
 
 - 결과: 컨테이너를 삭제(down)하고 다시 만들어도 `hello.txt`가 유지됨을 확인.
+
+## 6. GitHub SSH 연동
+
+### 6-1. SSH 키 생성
+
+```bash
+$ ssh-keygen -t ed25519 -C "goo190202@gmail.com"
+Your identification has been saved in /c/Users/goo1902020801/.ssh/id_ed25519
+Your public key has been saved in /c/Users/goo1902020801/.ssh/id_ed25519.pub
+```
+
+### 6-2. 공개 키를 GitHub에 등록 후 연결 테스트
+
+```bash
+$ ssh -T git@github.com
+Hi uni-11-git! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+### 6-3. 저장소 주소를 HTTPS에서 SSH로 변경
+
+```bash
+$ git remote set-url origin git@github.com:uni-11-git/e1-1.git
+$ git remote -v
+origin  git@github.com:uni-11-git/e1-1.git (fetch)
+origin  git@github.com:uni-11-git/e1-1.git (push)
+```
+
+### 6-4. SSH로 push 성공
+
+```bash
+$ git push origin main
+To github.com:uni-11-git/e1-1.git
+   7168f2e..653e10b  main -> main
+```
+
+- 결과: 비밀번호 입력 없이 SSH 키 인증만으로 push에 성공함.
